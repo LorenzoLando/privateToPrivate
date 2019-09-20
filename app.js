@@ -18,23 +18,46 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 //express-sanitizer =  sanitizing maicious script in my imput
 app.use(expressSanitizer());
-
-//defining the schema for the users record
-//
-const blogSchema = new mongoose.Schema({
+//definig a schema for the properties record
+const propertySchema = new mongoose.Schema({
 	title: String,
 	image: String,
-	body: String,
-	created: {type: Date, default: Date.now}
+	description: String,
+	adress: String,
+	price: String
 });
-//to use a the schema i have to compile it into a model
-const Blog = mongoose.model("Blog", blogSchema);
 
-// Blog.create({ 
-	
-// 	title: "myFirstPost",
-// 	image: "https://images.unsplash.com/photo-1556740758-90de374c12ad?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
-// 	body: "This is by far the most interesting post ever"
+//compiling the property schema into a model
+const Property = mongoose.model("Property", propertySchema);
+
+//defining the schema for the users record
+const userSchema = new mongoose.Schema({
+	name: String,
+	surname: String,
+	email: String,
+	properties: [propertySchema]
+});
+
+//to use a the schema i have to compile it into a model
+const User = mongoose.model("User", userSchema);
+
+//Creating a new user record
+//with a property association
+
+
+// User.create({ 
+// 	name: "Test",
+// 	surname: "Test",
+// 	email: "ciao@google.it",
+// 	properties: [
+// 		{
+// 			title: "test",
+// 			image: "https://images.unsplash.com/photo-1568905429146-cf7656892b5a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=552&q=80",
+// 			description: "test description",
+// 			adress: "test adress",
+// 			price: "test price"
+// 		}
+// 	]
 	
 // }, (err, blog) => {
 //   if (err) {
@@ -45,19 +68,25 @@ const Blog = mongoose.model("Blog", blogSchema);
   
 // });
 
+//BEGINNING OF RESTFUL ROUTING
+
+
+
+
 
 //INDEX
-//routing for the index page the find method is called on the model to retrive the collection 
-//send the data as variable to the index page the rander all elements
-// app.get("/blogs", (req, res) => {
-// 	Blog.find({}, (err, blogs) => {
-// 		if(err){
-// 		   console.log(err);
-// 		} else {
-// 		   res.render("index", {blogs: blogs});
-// 		}
-// 	});
-// });
+//1-routing for the index page 
+//2-finding all users records in the database
+
+app.get("/properties", (req, res) => {
+	User.find({}, (err, users) => { //2
+		if(err){
+		   console.log(err);
+		} else {
+		   res.render("index", {users: users});  //1
+		}
+	});
+});
 
 
 //NEW
@@ -153,6 +182,6 @@ const Blog = mongoose.model("Blog", blogSchema);
 
 //listening for http request on the port
 app.listen(3000, () => {
-  console.log("blogCamp app server has started!!!!!");
+  console.log("privateToPrivate app server has started!!!!!");
 });
 
