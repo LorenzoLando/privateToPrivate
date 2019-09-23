@@ -1,19 +1,50 @@
 <% include ./partials/header.ejs %>
-
-    <!-- beginning searchbar -->
-        
-      <div class="d-flex flex-column justify-content-center h-100">
-          <div class="searchbar">
-              <input id="main-search" class="search_input" type="text" name="" placeholder="Inserisci gli ingredienti .............">
-              <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
-          </div>
-          <div class="randomButton"> 
-              <button  type="button" class="randomButton__button btn btn-secondary btn-lg">I feel lucky</button>
-          </div>
-         </div>
-      </div>
-
-    <!-- end searchbar -->
+<!--  the form logic is base on activating the form that is required for the three requests-->
+<!--  general form container-->
+<div class="formContainer">
+<button type="button" class="btn btn-primary">Sell</button>
+<button type="button" class="btn btn-secondary">Rent</button>
+<button type="button" class="btn btn-success">Valutation</button>
+<!-- 	form to sell -->
+		<form class="form-inline active">
+		  <div class="form-group mb-2">
+			<label for="staticEmail2" class="sr-only">Email</label>
+			<input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
+		  </div>
+		  <div class="form-group mx-sm-3 mb-2">
+			<label for="inputPassword2" class="sr-only">Password</label>
+			<input type="password" class="form-control" id="inputPassword2" placeholder="Password">
+		  </div>
+		  <button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
+		</form>
+<!-- 	/form to sell -->
+<!-- 	form to rent -->
+		<form class="form-inline">
+		  <div class="form-group mb-2">
+			<label for="staticEmail2" class="sr-only">Email</label>
+			<input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
+		  </div>
+		  <div class="form-group mx-sm-3 mb-2">
+			<label for="inputPassword2" class="sr-only">Password</label>
+			<input type="password" class="form-control" id="inputPassword2" placeholder="Password">
+		  </div>
+		  <button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
+		</form>
+<!-- 	/form to rent -->
+<!-- 	 form for valutation-->
+		<form class="form-inline">
+		  <div class="form-group mb-2">
+			<label for="staticEmail2" class="sr-only">Email</label>
+			<input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
+		  </div>
+		  <div class="form-group mx-sm-3 mb-2">
+			<label for="inputPassword2" class="sr-only">Password</label>
+			<input type="password" class="form-control" id="inputPassword2" placeholder="Password">
+		  </div>
+		  <button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
+		</form>
+<!-- 	 /form for valutation-->
+</div>
 <% include ./partials/footer.ejs %>
 
 
