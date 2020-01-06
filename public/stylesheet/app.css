@@ -2,6 +2,18 @@
  background-color: coral;
 }
 
+/* centering the form container in index */
+.formContainer {
+    display: flex;
+	margin-left: auto;
+	margin-right: auto;
+    background-color: red;
+    align-items: center;
+    justify-content: center; 
+	width: 100%;
+}
+
+
 
 
 /* making all the main form disappear on page load */
