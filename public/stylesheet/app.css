@@ -1,6 +1,37 @@
+body {
+	height: 100vh;
+}
+
 #mainNavbar {
  background-color: coral;
 }
+
+
+#landingContainer {
+	margin: 15% 0;
+	text-align: center;
+}
+
+
+#indexImage {
+	width: 100%;
+	height: 50%;
+}
+
+#mainFooter {
+  	background-color: coral;
+  	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 1rem;
+	
+}
+
+#mainFooter  p {
+	margin: 0;
+	
+}
+
 
 /* centering the form container in index */
 .formContainer {
@@ -12,9 +43,6 @@
     justify-content: center; 
 	width: 100%;
 }
-
-
-
 
 /* making all the main form disappear on page load */
 .form-inline {

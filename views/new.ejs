@@ -1,7 +1,20 @@
 <% include ./partials/header.ejs %>
-<h1>you have reached the new route</h1>
+	<div class="">
+		<div class="">New Post</div>
+		<form class="" action="/blogs" method="POST">
+			<div class="">
+				<label>Title</label>
+				<input type="text" name="post[title]" placeholder="title">
+			</div>
+			<div class="">
+				<label>Image</label>
+				<input type="text" name="post[image]" placeholder="image">
+			</div>
+			<div class="">
+				<label>Blog content</label>
+				<textarea type="text" name="post[post]" placeholder="post text goes here"></textarea>
+			</div>
+			<input class="" type="submit">
+		</form>
+	</div>
 <% include ./partials/footer.ejs %>
-
-
-
-

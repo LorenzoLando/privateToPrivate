@@ -4,86 +4,49 @@ const express = require("express"),
 	  bodyParser = require("body-parser"),
 	  expressSanitizer = require("express-sanitizer"),
 	  methodOverride = require("method-override"),
-	  mongoose = require("mongoose");
+	  mongoose = require("mongoose"),
+	  Post = require("./models/post"),
+	  seedDB = 	require("./seeds");
+
 
 //database connection via mongoose
-mongoose.connect("mongodb://localhost:27017f/restful_privateToPrivate", {useNewUrlParser: true});
+mongoose.connect("mongodb://localhost:27017f/privateToPrivate", {useNewUrlParser: true});
 //using view engine to automatically add extensions
 app.set("view engine", "ejs");
 //allowing express to use a static files such css images excetera forma folder named public
-app.use(express.static("public"));
-//using body parser
+app.use(express.static(__dirname + "/public"));
+//setto l`utilizzo di body parser
 app.use(bodyParser.urlencoded({ extended: true })); 
-//methodOverride to change POST in PUT and DELETE request
+//methodOverride serve a tramutare POST in PUT request 
+//questo permette di utilizzare restful route anche se gli html form non supportano PUT
+//l`argomento serve a far capire al metodo dove aspettarsi la query per cambiare il metodo
 app.use(methodOverride("_method"));
-//express-sanitizer =  sanitizing maicious script in my imput
+//express-sanitizer permette di evitare che vengano forniti imput alla app con script malicious
 app.use(expressSanitizer());
-//definig a schema for the properties record
-const propertySchema = new mongoose.Schema({
-	title: String,
-	image: String,
-	description: String,
-	adress: String,
-	price: String
+
+
+seedDB();
+
+
+
+
+
+// when the request is done to "/"
+//rendering of the landing page
+app.get("/", (req,res) => {
+	res.render("landing");
 });
-
-//compiling the property schema into a model
-const Property = mongoose.model("Property", propertySchema);
-
-//defining the schema for the users record
-const userSchema = new mongoose.Schema({
-	name: String,
-	surname: String,
-	email: String,
-	properties: [propertySchema]
-});
-
-//to use a the schema i have to compile it into a model
-const User = mongoose.model("User", userSchema);
-
-//Creating a new user record
-//with a property association
-
-
-// User.create({ 
-// 	name: "Test",
-// 	surname: "Test",
-// 	email: "ciao@google.it",
-// 	properties: [
-// 		{
-// 			title: "test",
-// 			image: "https://images.unsplash.com/photo-1568905429146-cf7656892b5a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=552&q=80",
-// 			description: "test description",
-// 			adress: "test adress",
-// 			price: "test price"
-// 		}
-// 	]
-	
-// }, (err, blog) => {
-//   if (err) {
-// 	  console.log(err);
-//   } else {
-// 	  console.log(blog);
-//   }
-  
-// });
-
-//BEGINNING OF RESTFUL ROUTING
-
-
-
 
 
 //INDEX
-//1-routing for the index page 
-//2-finding all users records in the database
-
-app.get("/properties", (req, res) => {
-	User.find({}, (err, users) => { //2
+//routing for the index page the find method is called on the model to retrive the collection 
+//send the data as variable to the index page the rander all elements
+app.get("/posts", (req, res) => {
+	Post.find({}, (err, posts) => {
 		if(err){
 		   console.log(err);
 		} else {
-		   res.render("index", {users: users});  //1
+		   res.render("index", {posts: posts});
 		}
 	});
 });
@@ -91,9 +54,9 @@ app.get("/properties", (req, res) => {
 
 //NEW
 //it just render the form to insert the new blog post
-// app.get("/blogs/new", (req, res) => {
-// 	res.render("new");
-// });
+app.get("/posts/new", (req, res) => {
+	res.render("new");
+});
 
 
 //CREATE
@@ -184,4 +147,3 @@ app.get("/properties", (req, res) => {
 app.listen(3000, () => {
   console.log("privateToPrivate app server has started!!!!!");
 });
-
