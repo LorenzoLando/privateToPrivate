@@ -1,20 +1,30 @@
 <% include ./partials/header.ejs %>
 	<div class="">
 		<div class="">New Post</div>
-		<form class="" action="/blogs" method="POST">
-			<div class="">
-				<label>Title</label>
-				<input type="text" name="post[title]" placeholder="title">
-			</div>
-			<div class="">
-				<label>Image</label>
-				<input type="text" name="post[image]" placeholder="image">
-			</div>
-			<div class="">
-				<label>Blog content</label>
-				<textarea type="text" name="post[post]" placeholder="post text goes here"></textarea>
-			</div>
-			<input class="" type="submit">
+		<form class="" action="/posts" method="POST">
+		  <div class="form-group">
+			<label for="exampleFormControlInput1">Title</label>
+			<input type="text" class="form-control" name="post[title]"  id="exampleFormControlInput1" placeholder="Title...">
+		  </div>
+		  <div class="form-group">
+			<label for="exampleFormControlInput1">Image</label>
+			<input type="text" class="form-control" name="post[image]"  id="exampleFormControlInput1" placeholder="Image...">
+		  </div>
+		  <div class="form-group">
+			<label for="exampleFormControlTextarea1">Post</label>
+			<textarea class="form-control" name="post[post]" id="exampleFormControlTextarea1" rows="3" placeholder="post text goes here..."></textarea>
+		  </div>
+			<button type="submit" class="btn btn-primary">Submit</button>
 		</form>
 	</div>
 <% include ./partials/footer.ejs %>
+
+
+
+
+
+
+
+
+
+

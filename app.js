@@ -53,30 +53,31 @@ app.get("/posts", (req, res) => {
 
 
 //NEW
-//it just render the form to insert the new blog post
+//it just render the form to insert the new  post
 app.get("/posts/new", (req, res) => {
 	res.render("new");
 });
 
 
 //CREATE
-//la post request per creare il nuovo blog post
-//create blog
-	//creo un nuovo record nel database
-	//i dati neegli attributi name del form son    o passati in una struttura oggetto cosi possono essere passati direttamente al create
-		//prima di salvare i dati nel database uso sanitize per eliminare script malevoli
-// app.post("/blogs", (req, res) => {
-// 	req.body.blog.body = req.sanitize(req.body.blog.body);
-// 	Blog.create(req.body.blog, (err, newBlog) => {
-// 		if (err) {
-// 			  	console.log(err);
-// 				res.render("new");
-// 		  } else {
-// 			 res.redirect("/blogs");
-// 		  }
+//post request to create a new post
+//create post
+	//1 saving the new record in the datbase
+	//1.1 I dati negli attributi name del form sono passati in una struttura oggetto cosi possono essere passati direttamente al create
+		//2 rima di salvare i dati nel database uso sanitize per eliminare script malevoli
+app.post("/posts", (req, res) => {
+	req.body.post.post = req.sanitize(req.body.post.post); //2
+	Post.create(req.body.post, (err, newPost) => { //1 //1.1
+		if (err) {
+			  	console.log(err);
+				res.render("new");
+		  } else {
+			  
+			 res.redirect("/posts");
+		  }
 
-// 		});
-// });
+	});
+});
 
 //SHOW
 //vogliamo mostrare le specfiche per il blog selezionato
