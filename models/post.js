@@ -6,7 +6,8 @@ const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema({
 	title: String,
 	image: String,
-	post : String
+	post : String,
+	created: {type: Date, default: Date.now}
 });
 
 //compiling the property schema into a model

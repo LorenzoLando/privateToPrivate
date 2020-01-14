@@ -1,11 +1,15 @@
 //package require
 const express = require("express"),
 	  app = express(),
+	  viewEngine = require("view-engine"), 
 	  bodyParser = require("body-parser"),
+	  mongoose = require("mongoose"),
+	  passport = require("passport"),
+	  LocalStrategy = require("passport-local"),
 	  expressSanitizer = require("express-sanitizer"),
 	  methodOverride = require("method-override"),
-	  mongoose = require("mongoose"),
 	  Post = require("./models/post"),
+	  User = require("./models/user"),
 	  seedDB = 	require("./seeds");
 
 
@@ -27,8 +31,30 @@ app.use(expressSanitizer());
 
 seedDB();
 
+//PASSPORT CONFIGURATION
+//1 secret is used for securyty reasons to set the cookie
+app.use(require("express-session")({
+	secret: "Secret", //1
+	resave: false,
+	saveUninitialized: false
+}));
 
+//2 setting the auth method
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+//middleware req.user the user is  passed to all routes
+//1 is p[assed to the rews of all routes]
+//2 nex() let you execcuted the other code
+app.use(function(req, res, next) {
+	res.locals.currentUser = req.user;
+	next();
+});
+
+//end of passport configuration
 
 
 // when the request is done to "/"
@@ -46,7 +72,7 @@ app.get("/posts", (req, res) => {
 		if(err){
 		   console.log(err);
 		} else {
-		   res.render("index", {posts: posts});
+		   res.render("posts/index", {posts: posts});
 		}
 	});
 });
@@ -55,7 +81,7 @@ app.get("/posts", (req, res) => {
 //NEW
 //it just render the form to insert the new  post
 app.get("/posts/new", (req, res) => {
-	res.render("new");
+	res.render("posts/new");
 });
 
 
@@ -70,7 +96,7 @@ app.post("/posts", (req, res) => {
 	Post.create(req.body.post, (err, newPost) => { //1 //1.1
 		if (err) {
 			  	console.log(err);
-				res.render("new");
+				res.render("posts/new");
 		  } else {
 			  
 			 res.redirect("/posts");
@@ -84,63 +110,151 @@ app.post("/posts", (req, res) => {
 //arrivando dal link contenete l id
 	//prendo il parametro id dallo url e lo passo al metodo findById
 	//renderizzo la pagina relativa passando il blog trovato come variabile
-// app.get("/blogs/:id", (req, res) => {
-// 	let parametri = req.params.id;
-// 	Blog.findById(parametri, (err, foundBlog) => {
-// 		if(err){
-// 		   res.redirect("/blogs");
-// 		} else {
-// 		   res.render("show", {foundBlog: foundBlog});
-// 		}
-// 	});
-// });
+app.get("/posts/:id", (req, res) => {
+	let parametri = req.params.id;
+	Post.findById(parametri, (err, foundPost) => {
+		if(err){
+		   res.redirect("/posts");
+		} else {
+		   res.render("posts/show", {foundPost: foundPost});
+		}
+	});
+});
 
 
 //EDIT
 //serve a modificare il record 
 //get request della pagina edit
-// app.get("/blogs/:id/edit", function(req, res){
-// 	Blog.findById(req.params.id, (err, foundBlog) => {
-// 		if(err) {
-// 		  res.redirect("/blogs");  
-// 		} else {
-// 			res.render("edit", {blog: foundBlog});
+app.get("/posts/:id/edit", function(req, res){
+	Post.findById(req.params.id, (err, foundPost) => {
+		if(err) {
+		  res.redirect("/posts");  
+		} else {
+			res.render("posts/edit", {post: foundPost});
 			
-// 		}
-// 	});
-// });
+		}
+	});
+});
 
-//UPDATE 
+//UPDATE  
 //posso usare la put request grazie al methodOverride con il metodo find and update prendo i dati dalla request li aggiorno
 //i dati sono presi dal form grazie all`attributo name req.body.blog
 //se err re indirizzo all`index
 //se sucess re indirzzo alla pagina show del blog in questione 
 
-// app.put("/blogs/:id", (req, res) => {
-// 	req.body.blog.body = req.sanitize(req.body.blog.body);
-// 	Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
-// 		if(err){
-// 		   	res.redirect("/blogs");
-// 		  } else {
-// 		   	res.redirect("/blogs/" + req.params.id);
-// 		  }
-// 	});
-// });
+app.put("/posts/:id", (req, res) => {
+	console.log(req.body.post.posi);
+	req.body.post.post = req.sanitize(req.body.post.post);
+ 	Post.findByIdAndUpdate(req.params.id, req.body.post, (err, updatedPost) => {
+		if(err){
+		   	res.redirect("/posts");
+		  } else {
+		   	res.redirect("/posts/" + req.params.id);
+		  }
+	});
+});
 
 //DELETE
 //route che riceve la request per cancellare un blog
 //la request e` una post request dal bottone delete e viene mutata in delete da methodoverride
 //
-// app.delete("/blogs/:id", (req, res)=> {
-//   Blog.findByIdAndRemove(req.params.id, (err) => {
-// 	  if(err) {
-// 		  res.redirect("/blogs");
-// 	  } else {
-// 		  res.redirect("/blogs");
-// 	  }
-//   });
+app.delete("/posts/:id", (req, res)=> {
+  Post.findByIdAndRemove(req.params.id, (err) => {
+	  if(err) {
+		  res.redirect("/posts");
+	  } else {
+		  res.redirect("/posts");
+	  }
+  });
 	
-// });
+});
+
+
+
+//===================================
+// AUTH ROUTES
+//Routing for user authentication
+//===================================
+
+//showing registration page
+app.get("/register", (req, res) => {
+	res.render("register");
+});
+
+//logica del sign in form
+//1 creo un nuovo user inserendo nel database lo username inserito nel form
+//2 creo una registrazione salvando nel database una password che viene criptata
+//3 in caso di errore renderizzo la pagina di registrazione
+//4 ti loggo e ti riporto su campground
+app.post("/register", (req, res) => {
+	var newUser = new User({username: req.body.username}); //1
+	console.log(newUser);
+	User.register(newUser, req.body.password, (err, user) => { //2
+		if(err) {
+			console.log(err);
+			return res.render("register");
+		}
+		passport.authenticate("local")(req, res, () => {
+			res.redirect("/posts"); //4
+		});
+	});
+});
+
+
+
+//=======================
+// LOGIN ROUTES
+//questa e` la sezione che gestisce le routes il login dell`utente
+//====================
+
+//mostra pagina per il login
+app.get("/login", (req, res) => {
+	res.render("login");
+});
+
+
+
+//logica del sign in form
+//1 l`autenticazione si fa tramite middleware il metodo autenticate deriva  da * 
+//per middleware si intende una funzionalita` che si esegue prima della callback
+//e la stessa funzione autenticate che si carica in register route
+app.post("/login", passport.authenticate("local", // *
+										 
+			{
+				successRedirect: "/posts",
+				failureRedirect: "/login"
+			
+	}), (req, res) => {
+	 
+});
+
+
+//=======================
+//LOGOUT ROUTES
+//questa e` la sezione che gestisce le routes il logout dell`utente
+//====================
+
+
+//gestisci la richiesta di logout
+//1 .logout() e` una funzionalita` costruita dentro il pacchetto passport
+//2 re-indirizzo su campground
+app.get("/logout", (req, res) => {
+	req.logout(); //1
+	res.redirect("/posts"); //2
+});
+
+
+//definisco il middlware per quanto riguarda l`autenticazione
+//la funzione verra` utilizzata come middleware 
+//1 se sei autenticato con una funzionalita` offerta da passport
+//2 eseguo la funzione successiva grazie a next()
+//3 if non autenticato reindirizzo su /login
+function isLoggedIn (req, res, next) {
+	if(req.isAuthenticated()) { //1
+	   		return next(); //2
+	 }
+	 res.redirect("/login"); //3
+}
 
 
 

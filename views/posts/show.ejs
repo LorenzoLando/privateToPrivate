@@ -1,0 +1,20 @@
+<% include ../partials/header.ejs %>
+<div class="">
+	<div class=""><%= foundPost.title %></div>
+	<div class="">
+		<div class="">
+			<img class="" src="<%= foundPost.image %>">
+			<div class="">
+			<span><%= foundPost.created.toDateString() %></span>	
+			</div>
+			<div class="">
+				<p><%- foundPost.post %></p>
+			</div>
+			<a class="" href="/posts/<%= foundPost._id%>/edit">Edit</a>
+			<form id="" action="/posts/<%= foundPost._id%>?_method=DELETE" method="POST">
+				<button class="">Delete</button>
+			</form>
+		</div>
+	</div>
+</div>
+<% include ../partials/footer.ejs %>
